@@ -5,9 +5,9 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./SSTORE2.sol";
+import "SSTORE2.sol";
 
-import "./utils/Base64.sol";
+import "./Base64.sol";
 import "./IOpenseaStorefront.sol";
 
 contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, ReentrancyGuard {
@@ -26,7 +26,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
         require((tokenId >= firstShit && tokenId <= lastShit)
             || osTokenIdToNewTokenId[tokenId] != 0, "not a shit");
 
-        os.safeTransferFrom(msg.sender, address(0), tokenId, 1, '');
+        os.safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
         _safeMint(msg.sender, osTokenIdToNewTokenId[tokenId]);
     }
 
@@ -73,4 +73,14 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
         _safeMint(msg.sender, tokenId);
     }
     
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual override returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
 }
