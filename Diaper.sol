@@ -5,7 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "SSTORE2.sol";
+import "./SSTORE2.sol";
 
 import "./Base64.sol";
 import "./IOpenseaStorefront.sol";
@@ -19,7 +19,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
 
 
     mapping(uint256 => uint256) osTokenIdToNewTokenId;
-    mapping(uint256 => string) onChainSvgPointers; 
+    mapping(uint256 => address) onChainSvgPointers; 
     mapping(uint256 => string) onChainDescription; 
 
     function wrapDiaper(uint256 tokenId) external {
@@ -40,7 +40,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
                             ', "description":"', 
                             onChainDescription[_tokenId],
                             '", "image": "', 
-                            string(SSTORE.read(onChainSvgPointers[_tokenId])),
+                            string(SSTORE2.read(onChainSvgPointers[_tokenId])),
                             '"}')))));
     }
 
@@ -53,7 +53,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
     function mapTokensAndUploadSVGAndDescription(uint256 osTokenId, uint256 newTokenId, 
                                     string memory svg, string memory description) external onlyOwner {
         osTokenIdToNewTokenId[osTokenId] = newTokenId;
-        onChainSvgPointers[newTokenId] = SSTORE.write(bytes(svg));
+        onChainSvgPointers[newTokenId] = SSTORE2.write(bytes(svg));
         onChainDescription[newTokenId] = description;
     }
     function mapTokens(uint256 osTokenId, uint256 newTokenId) external onlyOwner {
@@ -61,7 +61,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
     }
 
     function uploadSvg(uint256 newTokenId, string memory svg) external onlyOwner {
-        onChainSvg[newTokenId] = svg;
+        onChainSvgPointers[newTokenId] = SSTORE2.write(bytes(svg));
     }
 
     function uploadDescription(uint256 newTokenId, string memory description) external onlyOwner {
