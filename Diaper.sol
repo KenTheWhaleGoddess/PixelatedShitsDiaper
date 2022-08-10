@@ -26,7 +26,7 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
         require((tokenId >= firstShit && tokenId <= lastShit)
             || osTokenIdToNewTokenId[tokenId] != 0, "not a shit");
 
-        os.safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
+        os.safeTransferFrom(msg.sender, owner(), tokenId, 1, '');
         _safeMint(msg.sender, osTokenIdToNewTokenId[tokenId]);
     }
 
@@ -71,16 +71,6 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
     //for auctions. 
     function mintNewShitToOwner(uint256 tokenId) external onlyOwner {
         _safeMint(msg.sender, tokenId);
-    }
-    
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes memory
-    ) public virtual override returns (bytes4) {
-        return this.onERC1155Received.selector;
     }
 
 }
