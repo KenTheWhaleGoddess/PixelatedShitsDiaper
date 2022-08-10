@@ -15,16 +15,14 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
 
     
     uint256 constant public firstShit = 0x64D471D7B05B2BD4D7430C3E020A7512C158433000000000000010000000001;
-    uint256 constant public lastShit = 0x64D471D7B05B2BD4D7430C3E020A7512C158433000000000000C60000000001;
-
+    uint256 public lastShit = 0x64D471D7B05B2BD4D7430C3E020A7512C158433000000000000C60000000001;
 
     mapping(uint256 => uint256) osTokenIdToNewTokenId;
     mapping(uint256 => address) onChainSvgPointers; 
     mapping(uint256 => string) onChainDescription; 
 
     function wrapDiaper(uint256 tokenId) external {
-        require((tokenId >= firstShit && tokenId <= lastShit)
-            || osTokenIdToNewTokenId[tokenId] != 0, "not a shit");
+        require((tokenId >= firstShit && tokenId <= lastShit), "not a shit");
 
         os.safeTransferFrom(msg.sender, owner(), tokenId, 1, '');
         _safeMint(msg.sender, osTokenIdToNewTokenId[tokenId]);
@@ -32,6 +30,10 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
 
     //token uri function
 
+    function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
+        require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
+        return buildMetadata(_tokenId);
+    }
 
     function buildMetadata(uint256 _tokenId) public view returns(string memory) {
         return string(abi.encodePacked(
@@ -43,7 +45,6 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
                             string(SSTORE2.read(onChainSvgPointers[_tokenId])),
                             '"}')))));
     }
-
 
     // must be called for new Shits. 
     // 1. maps old token id to new token id
@@ -66,6 +67,10 @@ contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, Reentran
 
     function uploadDescription(uint256 newTokenId, string memory description) external onlyOwner {
         onChainDescription[newTokenId] = description;
+    }
+
+    function setLastShit(uint256 _lastShit) external onlyOwner {
+        lastShit = _lastShit;
     }
 
     //for auctions. 
