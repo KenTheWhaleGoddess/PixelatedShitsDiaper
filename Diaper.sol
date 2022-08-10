@@ -5,9 +5,9 @@ pragma solidity >=0.7.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "SSTORE2.sol";
+import "./SSTORE2.sol";
 
-import "./Base64.sol";
+import "./utils/Base64.sol";
 import "./IOpenseaStorefront.sol";
 
 contract Diaper is ERC721("Pixelated Shit (wrapped)", "SHIT"), Ownable, ReentrancyGuard {
